@@ -1,12 +1,12 @@
 const express = require('express')
 const cors = require('cors')
 const { MongoClient, ServerApiVersion } = require('mongodb')
-const user = require('./routes/user')
-const userRoutes = require('./routes/user')
+const user = require('./routes/User')
+const userRoutes = require('./routes/User')
 
 // CORS configuration
 const corsOptions = {
-    origin: 'http://localhost:4000', // Adjust this to match your frontend's origin
+    origin: 'http://localhost:3000', // Adjust this to match your frontend's origin
     methods: 'GET,POST,PUT,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Authorization',
 }
@@ -76,8 +76,8 @@ module.exports = app
 
 // Il faut ajouter la requête nécessaire pour montrer les livres
 app.get('/api/books', (req, res, next) => {
-    console.log('lapplication a reçue une requête get books')
+    console.log('lapplication a reçu une requête get books')
     res.status(200).json({ message: 'le serveur a répondu au frontend' })
 })
 
-app.use('api/auth', userRoutes)
+app.use('/api/auth', userRoutes)
