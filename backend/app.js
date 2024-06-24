@@ -5,6 +5,7 @@ const user = require('./routes/User')
 const userRoutes = require('./routes/User')
 const bookRoutes = require('./routes/Book')
 const mongoose = require('mongoose')
+const path = require('path')
 
 const app = express()
 
@@ -76,6 +77,9 @@ module.exports = app
  * fin configuration de connection à la base de donnée
  *
  */
+
+// Cela indique à Express qu'il faut gérer la ressource images de manière statique
+app.use('/images', express.static(path.join(__dirname, 'images')))
 
 // Il faut ajouter la requête nécessaire pour montrer les livres
 app.use('/api/books', bookRoutes)

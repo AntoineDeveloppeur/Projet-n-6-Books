@@ -1,23 +1,6 @@
 const bcrypt = require('bcrypt')
 const User = require('../models/user')
-
-// exports.signup = (req, res, next) => {
-//     console.log('je suis dans signup', req.body.password)
-//     const objet = { objet: 'objet' }
-
-//     objet
-//         .save()
-//         .then(() => res.status(201).json({ message: 'utilisateur enregistré' }))
-//         .catch((error) => {
-//             console.log('error dans le save')
-//             res.status(408).json({ message: error })
-//         })
-
-//         .catch((error) => {
-//             console.log('erreur dans le catch de hash')
-//             res.status(503).json({ error })
-//         })
-// }
+const jwt = require('jsonwebtoken')
 
 exports.signup = (req, res, next) => {
     console.log('je suis dans signup', req.body.password)
@@ -50,19 +33,48 @@ exports.login = (req, res, next) => {
     console.log('je suis dans la fonction login')
     User.findOne({ email: req.body.email })
         .then((user) => {
-            console.log('je suis dans le then du findone')
             if (user === null) {
-                console.log('lutilisateur nexistepas')
-                res.status(401).json({ message: 'utilisateur non trouvé' })
+                console.log('utilisateur inconnu')
+                res.status(401).json({
+                    message: 'utilisateur inconnu',
+                })
             } else {
-                console.log('lutilisateur existe')
-                if (req.body.password === user.password) {
-                    console.log('le password est correct')
-                    res.status(200).json({ message: 'mot de passe correct' })
-                } else {
-                    console.log('le password est incorrect')
-                    res.status(400).json({ message: 'mot de passe incorrect' })
-                }
+                bcrypt
+                    .compare(req.body.password, user.password)
+                    .then((valid) => {
+                        if (!valid) {
+                            console.log(
+                                'mot de pass incorect user password',
+                                user.password,
+                                'req.body.password',
+                                req.body.password
+                            )
+                            res.status(401).json({
+                                message: 'mot de pass incorect',
+                            })
+                        } else {
+                            console.log({
+                                userId: user._id,
+                                token: jwt.sign(
+                                    { userId: user._id },
+                                    'Rmni%355bX3tPNUV*e(E', // C'est la clé secrète qui permet de générer le token
+                                    { expiresIn: '24h' }
+                                ),
+                            })
+                            res.status(200).json({
+                                userId: user._id,
+                                token: jwt.sign(
+                                    { userId: user._id },
+                                    'Rmni%355bX3tPNUV*e(E', // C'est la clé secrète qui permet de générer le token
+                                    { expiresIn: '24h' }
+                                ),
+                            })
+                        }
+                    })
+                    .catch((error) => {
+                        console.log('error dans bcrypt du login')
+                        res.status(500).json({ error })
+                    })
             }
         })
         .catch((error) => {
