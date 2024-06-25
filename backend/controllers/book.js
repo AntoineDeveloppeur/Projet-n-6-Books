@@ -60,7 +60,7 @@ exports.modifyABook = (req, res, next) => {
         ? {
               ...JSON.parse(req.body.book),
               imageUrl: `${req.protocol}://${req.get('host')}/images/${
-                  req.file.name
+                  req.file.filename
               }`,
           }
         : { ...req.body } //pourquoi a-t-on besoin du spread operator ici. Sous quel forme la requête arrive-t-elle sans fichier ?
