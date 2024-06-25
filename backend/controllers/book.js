@@ -77,7 +77,7 @@ exports.modifyABook = (req, res, next) => {
                 })
             } else {
                 Books.updateOne(
-                    { _id: bookObject._id },
+                    { _id: req.params.id },
                     { ...bookObject, _id: req.params._id }
                 )
                     .then(() => {
