@@ -125,35 +125,60 @@ exports.deleteABook = (req, res, next) => {
 
 //En cours de construction
 exports.rateABook = (req, res, next) => {
+    console.log('req.params.id', req.params.id)
+    console.log('req.body', req.body)
     Books.findOne({ _id: req.params.id })
-        .then((book) => {
-            console.log('je suis rentré dans le findOne de rateaBook')
-            if (
-                book.rating.find((rating) => rating.userId === req.auth.userId)
-            ) {
-                console.log("l'utilisateur a déjà noté le livre")
+        .then((bookObject) => {
+            console.log('je suis rentré dans le then de findOne de rateaBook')
+            res.status(200).json({ message: 'tout est cool' })
+            console.log('bookObject.ratings', bookObject.ratings)
+            const userRateAlreadyThisBook = bookObject.ratings.find(
+                (rating) => rating.userId === req.auth.userId
+            )
+            if (userRateAlreadyThisBook) {
+                console.log("l'utilisateur a déjà noté ce livre")
                 res.status(403).json({
                     message: "l'utilisateur à déjà noté le livre",
                 })
             } else {
-                console.log(book.rating)
-                const newBookRatingObject = book.rating
-                newBookRatingObject.push(req.body)
-                Books.updateOne(
-                    { _id: req.params.id },
-                    { $set: { rating: newBookRatingObject } }
-                )
-                    .then(() => {
-                        res.status(200)
-                        Books.findOne({ _id: req.params.id }).then((book) => {
-                            book
-                        })
-                    })
-                    .catch((error) => res.status(400).json({ error }))
+                console.log('je peux continuer à développer pépaire')
+                console.log('req.body.rating', req.body.rating)
+                // ici il faut ajouter un objet avec le rating de l'utilisateur
+                bookObject.ratings.push({
+                    userId: req.auth.userId,
+                    rating: req.body.rating,
+                })
+                console.log('bookObject.ratings', bookObject.ratings)
+                console.log('bookObject', bookObject)
             }
+
+            //     const newBookObjectRatings = bookObject.ratings.map(
+            //         (rating) => rating
+            //     )
+            //     console.log('newBookObjectRatings', newBookObjectRatings)
+            // }
+
+            // } else {
+            //     console.log('bokkObject.ratin', bookObject.rating)
+            //     const newBookRatingObject = bookObject.rating
+            //     newBookRatingObject.push(req.body)
+            //     Books.updateOne(
+            //         { _id: req.params.id },
+            //         { $set: { rating: newBookRatingObject } }
+            //     )
+            //         .then(() => {
+            //             res.status(200)
+            //             Books.findOne({ _id: req.params.id }).then(
+            //                 (bookObject) => {
+            //                     bookObject
+            //                 }
+            //             )
+            //         })
+            //         .catch((error) => res.status(400).json({ error }))
+            // }
         })
         .catch((error) => {
             console.log('Livre non trouvé')
-            res.status(404).json({ message: error })
+            res.status(404).json({ error })
         })
 }

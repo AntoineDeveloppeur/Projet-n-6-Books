@@ -6,6 +6,7 @@ const userRoutes = require('./routes/User')
 const bookRoutes = require('./routes/Book')
 const mongoose = require('mongoose')
 const path = require('path')
+require('dotenv').config()
 
 const app = express()
 
@@ -38,37 +39,11 @@ app.use(express.json())
 
 mongoose
     .connect(
-        'mongodb+srv://antoineverove:TPKIpIN61zJvWmp5@antoineserver.fndalaw.mongodb.net/?retryWrites=true&w=majority&appName=Antoineserver',
-        { useNewUrlParser: true, useUnifiedTopology: true }
+        // 'mongodb+srv://antoineverove:TPKIpIN61zJvWmp5@antoineserver.fndalaw.mongodb.net/?retryWrites=true&w=majority&appName=Antoineserver',
+        `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_NAME}.fndalaw.mongodb.net/?retryWrites=true&w=majority&appName=${process.env.APPNAME}`
     )
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'))
-
-// const uri =
-//     'mongodb+srv://antoineverove:TPKIpIN61zJvWmp5@antoineserver.fndalaw.mongodb.net/?retryWrites=true&w=majority&appName=Antoineserver'
-// // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-// const client = new MongoClient(uri, {
-//     serverApi: {
-//         version: ServerApiVersion.v1,
-//         strict: true,
-//         deprecationErrors: true,
-//     },
-// })
-// async function run() {
-//     try {
-//         // Connect the client to the server	(optional starting in v4.7)
-//         await client.connect()
-//         // Send a ping to confirm a successful connection
-//         await client.db('admin').command({ ping: 1 })
-//         console.log(
-//             'Pinged your deployment. You successfully connected to MongoDB!'
-//         )
-//     } finally {
-//         // Ensures that the client will close when you finish/error
-//         await client.close()
-//     }
-// }
-// run().catch(console.dir)
 
 module.exports = app
 
